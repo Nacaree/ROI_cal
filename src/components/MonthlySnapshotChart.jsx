@@ -77,7 +77,7 @@ function MonthlySnapshotChart({ data }) {
               <div className="flex items-center gap-3">
                 <div className="relative h-4 flex-1 overflow-hidden rounded-full border border-white/70 bg-white/45 shadow-inner shadow-slate-900/5">
                   <div
-                    className={`h-full rounded-full bg-gradient-to-r ${tone.bar} shadow-[inset_0_1px_0_rgba(255,255,255,0.55)]`}
+                    className={`h-full rounded-full bg-gradient-to-r ${tone.bar} shadow-[inset_0_1px_0_rgba(255,255,255,0.55)] transition-[width] duration-300 ease-out`}
                     style={{ width }}
                   />
                 </div>

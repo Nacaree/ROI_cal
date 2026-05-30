@@ -1,4 +1,4 @@
-import { CircleDollarSign, Clock3, Percent, WalletCards } from 'lucide-react'
+import { CircleDollarSign, Clock3, Landmark, Percent, TrendingUp, WalletCards } from 'lucide-react'
 import MetricCard from './MetricCard.jsx'
 import { toCurrency, toPercent } from '../utils/formatters.js'
 
@@ -10,42 +10,59 @@ function toYears(value) {
 function MetricsGrid({ results }) {
   const requiredRentDetail =
     results.requiredRevenueMode === 'profit'
-      ? `${toCurrency(results.targetMonthlyProfit)} target profit`
-      : `${toPercent(results.targetCashOnCashReturn)} target ROI`
+      ? `Target: ${toCurrency(results.targetMonthlyProfit)}`
+      : `Target: ${toPercent(results.targetCashOnCashReturn)} ROI`
+  const isRevenueGapPositive = results.revenueGap >= 0
 
   return (
-    <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+    <section className="rounded-2xl border border-white/80 bg-white/35 p-3 shadow-[0_24px_80px_rgba(15,23,42,0.12)] ring-1 ring-slate-900/5 backdrop-blur-2xl sm:p-4">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       <MetricCard
         icon={CircleDollarSign}
         label="Monthly cash flow"
         value={toCurrency(results.monthlyCashFlow)}
         detail={`${toCurrency(results.annualCashFlow)} per year`}
-        tone={results.monthlyCashFlow >= 0 ? 'green' : 'amber'}
+        tone={results.monthlyCashFlow >= 0 ? 'green' : 'rose'}
       />
       <MetricCard
         icon={Percent}
-        label="Cash-on-cash return"
+        label="ROI"
         value={toPercent(results.cashOnCash)}
         detail={`${toCurrency(results.cashInvested)} cash invested`}
-        tone="blue"
+        tone="indigo"
       />
       <MetricCard
         icon={Clock3}
         label="Payback period"
         value={toYears(results.paybackYears)}
         detail="Time to recover initial investment"
-        tone="neutral"
+        tone="violet"
+      />
+      <MetricCard
+        icon={Landmark}
+        label="Break-even rent"
+        value={toCurrency(results.breakEvenRent)}
+        detail="Rent needed to avoid loss"
+        tone="teal"
+      />
+      <MetricCard
+        icon={TrendingUp}
+        label="Revenue gap"
+        value={toCurrency(Math.abs(results.revenueGap))}
+        detail={isRevenueGapPositive ? 'Above target profit' : 'Below target profit'}
+        tone={isRevenueGapPositive ? 'green' : 'rose'}
       />
       <MetricCard
         icon={WalletCards}
-        label="Gross required revenue"
-        value={toCurrency(results.grossRequiredRevenue)}
+        label="Minimum rent per unit"
+        value={toCurrency(results.requiredMonthlyRent)}
         details={[
-          `${toCurrency(results.requiredMonthlyRent)} minimum rent/unit`,
+          `Gross required: ${toCurrency(results.grossRequiredRevenue)}`,
           requiredRentDetail,
         ]}
         tone="amber"
       />
+      </div>
     </section>
   )
 }

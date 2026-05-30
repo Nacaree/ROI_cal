@@ -63,6 +63,10 @@ input[type="range"]::-webkit-slider-runnable-track {
     inset 0 0 18px rgba(59, 130, 246, 0.14),
     0 10px 30px rgba(15, 23, 42, 0.08);
   backdrop-filter: blur(16px);
+  transition:
+    background 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease;
 }
 
 input[type="range"]::-webkit-slider-thumb {
@@ -79,6 +83,10 @@ input[type="range"]::-webkit-slider-thumb {
   box-shadow:
     0 12px 28px rgba(235, 37, 172, 0.28),
     inset 0 1px 0 rgba(201, 23, 23, 0.85);
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    border-color 160ms ease;
 }
 
 input[type="range"]::-moz-range-track {
@@ -92,6 +100,10 @@ input[type="range"]::-moz-range-track {
     inset 0 1px 0 rgba(255, 255, 255, 0.72),
     inset 0 0 18px rgba(59, 130, 246, 0.14),
     0 10px 30px rgba(15, 23, 42, 0.08);
+  transition:
+    background 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease;
 }
 
 input[type="range"]::-moz-range-thumb {
@@ -105,6 +117,52 @@ input[type="range"]::-moz-range-thumb {
   box-shadow:
     0 12px 28px rgba(37, 99, 235, 0.28),
     inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    border-color 160ms ease;
+}
+
+input[type="range"]:not(:disabled):hover::-webkit-slider-thumb,
+input[type="range"]:not(:disabled):focus-visible::-webkit-slider-thumb {
+  transform: scale(1.08);
+  box-shadow:
+    0 16px 34px rgba(235, 37, 172, 0.34),
+    inset 0 1px 0 rgba(201, 23, 23, 0.85);
+}
+
+input[type="range"]:not(:disabled):hover::-moz-range-thumb,
+input[type="range"]:not(:disabled):focus-visible::-moz-range-thumb {
+  transform: scale(1.08);
+  box-shadow:
+    0 16px 34px rgba(37, 99, 235, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+}
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes panelFadeIn {
+  from {
+    opacity: 0.88;
+    transform: translateY(3px);
+    box-shadow: 0 16px 50px rgba(15, 23, 42, 0.08);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    box-shadow: 0 24px 80px rgba(15, 23, 42, 0.12);
+  }
 }
 
 input[type="range"]:disabled::-webkit-slider-runnable-track,

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import AppHeader from './components/AppHeader.jsx'
-import DetailStats from './components/DetailStats.jsx'
+import CashFlowInsights from './components/CashFlowInsights.jsx'
 import FormulaReference from './components/FormulaReference.jsx'
 import InputPanel from './components/InputPanel.jsx'
 import MetricsGrid from './components/MetricsGrid.jsx'
@@ -81,7 +81,7 @@ function App() {
   return (
     <main className="relative min-h-screen overflow-hidden text-slate-900">
       <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.72),transparent_28rem),radial-gradient(circle_at_85%_10%,rgba(125,211,252,0.22),transparent_24rem)]" />
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-5 sm:px-6 lg:px-8">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-5 px-4 py-5 sm:px-6 lg:px-8">
         {/* Header shows the app title and browser auto-save status. */}
         <AppHeader
           hasSaveFailed={hasSaveFailed}
@@ -92,12 +92,12 @@ function App() {
         <MetricsGrid results={results} />
 
         {/* Left side is editable inputs; right side is calculated outputs. */}
-        <div className="grid gap-6 lg:grid-cols-[360px_1fr]">
+        <div className="grid items-start gap-5 lg:grid-cols-[360px_1fr]">
           <InputPanel sections={inputSections} values={values} onChange={updateValue} />
 
-          <div className="grid gap-6">
+          <div className="grid gap-5">
             <MonthlySnapshotChart data={monthlyData} />
-            <DetailStats results={results} />
+            <CashFlowInsights results={results} />
             <FormulaReference requiredRevenueMode={results.requiredRevenueMode} />
           </div>
         </div>

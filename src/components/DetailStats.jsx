@@ -10,8 +10,8 @@ const detailStats = [
   { key: 'monthlyOperatingExpenses', label: 'Operating expenses' },
   {
     key: 'monthlyNoi',
-    label: 'Net monthly income',
-    description: 'Profit after all expenses',
+    label: 'Net monthly profit (NOI)',
+    description: 'Actual profit after all operating expenses',
   },
   { 
     key: 'targetMonthlyProfit', 

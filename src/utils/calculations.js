@@ -53,6 +53,7 @@ export function calculateDeal(values) {
     requiredRevenueMode === 'profit'
       ? Math.max(inputs.targetMonthlyProfit, 0)
       : roiTargetMonthlyProfit
+  const revenueGap = monthlyCashFlow - targetMonthlyProfit
 
   // Convert the net revenue target into gross rent needed before vacancy and tax.
   const revenueRetentionRate = (1 - vacancyRate) * (1 - rentalTaxRate)
@@ -90,6 +91,7 @@ export function calculateDeal(values) {
     targetCashOnCashReturn,
     roiTargetMonthlyProfit,
     targetMonthlyProfit,
+    revenueGap,
     breakEvenRevenue: breakEvenNetRevenue,
     requiredRevenue: netRequiredRevenue,
     breakEvenNetRevenue,

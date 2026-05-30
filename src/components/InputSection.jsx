@@ -9,6 +9,7 @@ function InputSection({ section, values, onChange }) {
   const visibleFields = section.fields.filter(
     (field) => !field.showWhen || values[field.showWhen.key] === field.showWhen.value,
   )
+  const visibleFieldKey = visibleFields.map((field) => field.key).join(':')
 
   return (
     <section className="rounded-2xl border border-white/80 bg-white/35 p-4 shadow-[0_24px_80px_rgba(15,23,42,0.12)] ring-1 ring-slate-900/5 backdrop-blur-2xl">
@@ -37,7 +38,10 @@ function InputSection({ section, values, onChange }) {
           />
         </div>
       )}
-      <div className="grid gap-4">
+      <div
+        key={section.choice ? visibleFieldKey : undefined}
+        className={section.choice ? 'grid gap-4 animate-[fadeSlideIn_220ms_ease-out]' : 'grid gap-4'}
+      >
         {visibleFields.map((field) => (
           <NumberField
             key={field.key}

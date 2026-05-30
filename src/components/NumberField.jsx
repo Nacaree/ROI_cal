@@ -63,7 +63,7 @@ function NumberField({ field, value, onChange, disabled = false }) {
           onBlur={() => setIsFocused(false)}
           onChange={(event) => onChange(cleanNumberInput(event.target.value))}
           onFocus={() => setIsFocused(true)}
-          className={`h-10 w-full rounded-xl border border-white/80 bg-white/75 text-sm font-semibold text-slate-700 shadow-sm ring-1 ring-slate-900/5 outline-none backdrop-blur-xl transition disabled:cursor-not-allowed disabled:bg-white/45 disabled:text-slate-400 focus:border-black focus:bg-white/90 focus:ring-2 focus:ring-black-200/70 ${
+          className={`h-10 w-full rounded-xl border border-white/80 bg-white/75 text-sm font-semibold text-slate-700 shadow-sm ring-1 ring-slate-900/5 outline-none backdrop-blur-xl transition duration-200 ease-out disabled:cursor-not-allowed disabled:bg-white/45 disabled:text-slate-400 focus:-translate-y-px focus:border-blue-300/80 focus:bg-white/90 focus:shadow-[0_12px_28px_rgba(37,99,235,0.12)] focus:ring-2 focus:ring-blue-200/70 ${
             hasPrefix ? 'pl-7' : 'pl-3'
           } ${hasSuffix ? 'pr-10' : 'pr-3'}`}
         />

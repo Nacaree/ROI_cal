@@ -36,6 +36,10 @@ export const calculationFormulas = [
     formula: "Initial investment / Annual cash flow",
   },
   {
+    label: "Revenue gap",
+    formula: "Monthly cash flow - Target monthly profit",
+  },
+  {
     label: "Break-even rent per unit",
     formula: "Break-even gross revenue / Units",
   },
