@@ -1,0 +1,55 @@
+import NumberField from './NumberField.jsx'
+import SegmentedControl from './SegmentedControl.jsx'
+import ToggleField from './ToggleField.jsx'
+
+function InputSection({ section, values, onChange }) {
+  const Icon = section.icon
+  const isToggledOff = section.toggle && values[section.toggle.key] === false
+  // showWhen lets a field appear only for the selected mode, like Profit vs ROI.
+  const visibleFields = section.fields.filter(
+    (field) => !field.showWhen || values[field.showWhen.key] === field.showWhen.value,
+  )
+
+  return (
+    <section className="rounded-2xl border border-white/80 bg-white/35 p-4 shadow-[0_24px_80px_rgba(15,23,42,0.12)] ring-1 ring-slate-900/5 backdrop-blur-2xl">
+      <div className="mb-4 flex items-center gap-2 border-b border-white/70 pb-3">
+        <span className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/70 bg-white/55 text-slate-700 shadow-sm backdrop-blur-md">
+          <Icon size={18} aria-hidden="true" />
+        </span>
+        <h2 className="text-base font-semibold text-slate-950">{section.title}</h2>
+      </div>
+      {section.toggle && (
+        <div className="mb-4">
+          <ToggleField
+            label={section.toggle.label}
+            checked={values[section.toggle.key] !== false}
+            onChange={(checked) => onChange(section.toggle.key, checked)}
+          />
+        </div>
+      )}
+      {section.choice && (
+        <div className="mb-4">
+          <SegmentedControl
+            label={section.choice.label}
+            options={section.choice.options}
+            value={values[section.choice.key]}
+            onChange={(value) => onChange(section.choice.key, value)}
+          />
+        </div>
+      )}
+      <div className="grid gap-4">
+        {visibleFields.map((field) => (
+          <NumberField
+            key={field.key}
+            field={field}
+            value={values[field.key]}
+            disabled={isToggledOff}
+            onChange={(value) => onChange(field.key, value)}
+          />
+        ))}
+      </div>
+    </section>
+  )
+}
+
+export default InputSection
