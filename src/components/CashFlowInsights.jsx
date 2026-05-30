@@ -227,6 +227,8 @@ function CashFlowInsights({ results }) {
     }
     return <CashFlowFirst results={results} targetDifference={targetDifference} />
   }, [activeTab, results, targetDifference])
+  const desktopHeightStyle =
+    contentHeight === null ? undefined : { '--cash-flow-content-height': `${contentHeight}px` }
 
   useLayoutEffect(() => {
     const element = contentRef.current
@@ -282,8 +284,8 @@ function CashFlowInsights({ results }) {
       </div>
 
       <div
-        className="overflow-hidden transition-[height] duration-300 ease-out"
-        style={contentHeight === null ? undefined : { height: `${contentHeight}px` }}
+        className="overflow-visible sm:h-[var(--cash-flow-content-height)] sm:overflow-hidden sm:transition-[height] sm:duration-300 sm:ease-out"
+        style={desktopHeightStyle}
       >
         <div ref={contentRef} key={activeTab} className="animate-[fadeSlideIn_240ms_ease-out]">
           {activeView}

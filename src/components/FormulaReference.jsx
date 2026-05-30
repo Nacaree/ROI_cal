@@ -1,4 +1,4 @@
-import { useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Calculator, ChevronDown } from 'lucide-react'
 import { calculationFormulas } from '../config/formulas.js'
 
@@ -8,8 +8,6 @@ function shouldShowFormulasByDefault() {
 
 function FormulaReference({ requiredRevenueMode }) {
   const [isOpen, setIsOpen] = useState(shouldShowFormulasByDefault)
-  const [contentHeight, setContentHeight] = useState(null)
-  const contentRef = useRef(null)
   const formulas = useMemo(() => calculationFormulas.map((item) => {
     if (item.label !== 'Target monthly profit') return item
 
@@ -21,22 +19,6 @@ function FormulaReference({ requiredRevenueMode }) {
           : 'Initial investment x Target ROI / 12',
     }
   }), [requiredRevenueMode])
-
-  useLayoutEffect(() => {
-    const element = contentRef.current
-    if (!element) return undefined
-
-    function syncHeight() {
-      setContentHeight(element.scrollHeight)
-    }
-
-    syncHeight()
-
-    const observer = new ResizeObserver(syncHeight)
-    observer.observe(element)
-
-    return () => observer.disconnect()
-  }, [formulas])
 
   return (
     <section className="rounded-2xl border border-white/80 bg-white/35 p-4 shadow-[0_24px_80px_rgba(15,23,42,0.12)] ring-1 ring-slate-900/5 backdrop-blur-2xl sm:p-5">
@@ -64,18 +46,8 @@ function FormulaReference({ requiredRevenueMode }) {
         </div>
       </div>
 
-      <div
-        className="overflow-hidden transition-[height] duration-300 ease-out sm:!h-auto"
-        style={
-          contentHeight === null
-            ? undefined
-            : { height: isOpen ? `${contentHeight}px` : '0px' }
-        }
-      >
-        <div
-          ref={contentRef}
-          className={`pt-5 ${isOpen ? 'animate-[fadeSlideIn_220ms_ease-out]' : ''}`}
-        >
+      <div className={isOpen ? 'block sm:block' : 'hidden sm:block'}>
+        <div className="pt-5 animate-[fadeSlideIn_180ms_ease-out]">
           <h3 className="mb-3 text-sm font-bold uppercase text-slate-500">
             Calculation Formulas
           </h3>
