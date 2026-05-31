@@ -2,12 +2,18 @@ import { useMemo, useState } from 'react'
 import { Calculator, ChevronDown } from 'lucide-react'
 import { calculationFormulas } from '../config/formulas.js'
 
+// Mobile starts collapsed to reduce scroll; unsupported browsers fall back open.
 function shouldShowFormulasByDefault() {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+    return true
+  }
+
   return window.matchMedia('(min-width: 640px)').matches
 }
 
 function FormulaReference({ requiredRevenueMode }) {
   const [isOpen, setIsOpen] = useState(shouldShowFormulasByDefault)
+  // The target profit formula depends on whether the user selected profit or ROI mode.
   const formulas = useMemo(() => calculationFormulas.map((item) => {
     if (item.label !== 'Target monthly profit') return item
 

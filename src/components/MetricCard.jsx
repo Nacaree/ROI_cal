@@ -17,7 +17,7 @@ function MetricCard({ icon: Icon, label, value, detail, details, tone = 'neutral
   }[tone]
 
   return (
-    <article className="grid min-h-[108px] w-full grid-rows-[30px_auto_1fr] rounded-xl border border-white/65 bg-white/30 p-3 ring-1 ring-slate-900/5 backdrop-blur-xl transition duration-200 ease-out hover:-translate-y-0.5 hover:bg-white/40 hover:shadow-[0_18px_48px_rgba(15,23,42,0.1)] sm:min-h-[118px] sm:grid-rows-[32px_auto_1fr] sm:p-3.5">
+    <article className="grid min-h-[108px] w-full grid-rows-[30px_auto_1fr] rounded-xl border border-white/65 bg-white/30 p-3 ring-1 ring-slate-900/5 backdrop-blur-xl sm:min-h-[118px] sm:grid-rows-[32px_auto_1fr] sm:p-3.5">
       <div className="flex items-start justify-between gap-2">
         <span className="max-w-[11rem] text-[13px] font-bold leading-6 text-slate-600 sm:max-w-[9rem] sm:leading-7">
           {label}

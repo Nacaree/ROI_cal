@@ -5,18 +5,57 @@ import FormulaReference from './components/FormulaReference.jsx'
 import InputPanel from './components/InputPanel.jsx'
 import MetricsGrid from './components/MetricsGrid.jsx'
 import MonthlySnapshotChart from './components/MonthlySnapshotChart.jsx'
+import PanelErrorBoundary from './components/PanelErrorBoundary.jsx'
 import { defaultInputs, inputSections } from './config/calculatorFields.js'
-import {
-  buildMonthlyData,
-  calculateDeal,
-} from './utils/calculations.js'
+import { buildMonthlyData, calculateDeal } from './utils/calculations.js'
 
 const STORAGE_KEY = 'rental-roi-calculator:v1'
 
-// Load the last calculator state from this browser, then merge it with
-// defaults so newly added fields still get a valid starting value.
+// Saved input data is user-editable browser state, so only trusted keys and
+// valid numeric strings are restored into the calculator.
+function sanitizeSavedInputs(parsedInputs) {
+  return Object.fromEntries(
+    Object.entries(defaultInputs).map(([key, defaultValue]) => {
+      const savedValue = parsedInputs[key]
+
+      if (key === 'requiredRevenueMode') {
+        const isValidMode = savedValue === 'profit' || savedValue === 'roi'
+        return [key, isValidMode ? savedValue : defaultValue]
+      }
+
+      if (typeof defaultValue === 'number') {
+        if (typeof savedValue === 'number') {
+          return [key, Number.isFinite(savedValue) ? savedValue : defaultValue]
+        }
+
+        if (typeof savedValue === 'string') {
+          const cleanedValue = savedValue.trim().replaceAll(',', '')
+          return [
+            key,
+            cleanedValue !== '' && Number.isFinite(Number(cleanedValue))
+              ? savedValue
+              : defaultValue,
+          ]
+        }
+
+        return [key, defaultValue]
+      }
+
+      return [
+        key,
+        typeof savedValue === 'number' || typeof savedValue === 'string'
+          ? savedValue
+          : defaultValue,
+      ]
+    }),
+  )
+}
+
+// Load browser autosave once on startup and repair invalid saved values.
 function loadSavedInputs() {
   try {
+    if (typeof window === 'undefined' || !window.localStorage) return defaultInputs
+
     const savedInputs = window.localStorage.getItem(STORAGE_KEY)
     if (!savedInputs) return defaultInputs
 
@@ -25,10 +64,14 @@ function loadSavedInputs() {
       return defaultInputs
     }
 
-    return {
+    const sanitizedInputs = {
       ...defaultInputs,
-      ...parsedInputs,
+      ...sanitizeSavedInputs(parsedInputs),
     }
+
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(sanitizedInputs))
+
+    return sanitizedInputs
   } catch {
     return defaultInputs
   }
@@ -39,20 +82,18 @@ function App() {
   const [lastSavedAt, setLastSavedAt] = useState(null)
   const [hasSaveFailed, setHasSaveFailed] = useState(false)
 
-  // Recalculate results only when the user changes an input.
+  // Derived calculator data feeds every dashboard panel.
   const results = useMemo(() => calculateDeal(values), [values])
   const monthlyData = useMemo(() => buildMonthlyData(values, results), [values, results])
 
-  const dealStatus = useMemo(() => {
-    const isPositive = results.monthlyCashFlow > 0
-    return {
-      label: isPositive ? 'Good' : 'Risky',
-      className: isPositive
-        ? 'bg-emerald-50 border-emerald-100 text-emerald-700'
-        : 'bg-amber-50 border-amber-100 text-amber-700',
-    }
-  }, [results.monthlyCashFlow])
+  // Error boundaries reset automatically when their underlying panel data changes.
+  const monthlySnapshotResetKey = useMemo(
+    () => monthlyData.map((item) => `${item.name}:${item.value}:${item.type}`).join('|'),
+    [monthlyData],
+  )
+  const cashFlowResetKey = `${results.monthlyCashFlow}:${results.targetMonthlyProfit}:${results.requiredRevenueMode}`
 
+  // All field changes update React state and browser autosave together.
   function updateValue(key, value) {
     const nextValues = {
       ...values,
@@ -61,7 +102,6 @@ function App() {
 
     setValues(nextValues)
 
-    // Auto-save after every input change so refreshes do not wipe user data.
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(nextValues))
       setLastSavedAt(Date.now())
@@ -71,24 +111,11 @@ function App() {
     }
   }
 
-  function handleReset() {
-    if (window.confirm('Are you sure you want to reset all inputs to defaults?')) {
-      setValues(defaultInputs)
-      window.localStorage.removeItem(STORAGE_KEY)
-    }
-  }
-
   return (
     <main className="relative min-h-screen overflow-hidden text-slate-900">
       <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.72),transparent_28rem),radial-gradient(circle_at_85%_10%,rgba(125,211,252,0.22),transparent_24rem)]" />
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-5 px-4 py-5 sm:px-6 lg:px-8">
-        {/* Header shows the app title and browser auto-save status. */}
-        <AppHeader
-          hasSaveFailed={hasSaveFailed}
-          lastSavedAt={lastSavedAt}
-          dealStatus={dealStatus}
-          onReset={handleReset}
-        />
+        <AppHeader hasSaveFailed={hasSaveFailed} lastSavedAt={lastSavedAt} />
         <MetricsGrid results={results} />
 
         {/* Left side is editable inputs; right side is calculated outputs. */}
@@ -96,9 +123,18 @@ function App() {
           <InputPanel sections={inputSections} values={values} onChange={updateValue} />
 
           <div className="grid gap-5">
-            <MonthlySnapshotChart data={monthlyData} />
-            <CashFlowInsights results={results} />
-            <FormulaReference requiredRevenueMode={results.requiredRevenueMode} />
+            <PanelErrorBoundary name="Monthly Snapshot" resetKey={monthlySnapshotResetKey}>
+              <MonthlySnapshotChart data={monthlyData} />
+            </PanelErrorBoundary>
+            <PanelErrorBoundary name="Cash Flow Views" resetKey={cashFlowResetKey}>
+              <CashFlowInsights results={results} />
+            </PanelErrorBoundary>
+            <PanelErrorBoundary
+              name="Formula Reference"
+              resetKey={results.requiredRevenueMode}
+            >
+              <FormulaReference requiredRevenueMode={results.requiredRevenueMode} />
+            </PanelErrorBoundary>
           </div>
         </div>
       </div>

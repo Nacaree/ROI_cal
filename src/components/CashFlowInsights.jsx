@@ -26,17 +26,20 @@ const tabs = [
   },
 ]
 
+// Show negatives in accounting style while leaving positive values plain.
 function signedCurrency(value) {
   if (value < 0) return `-${toCurrency(Math.abs(value))}`
   return toCurrency(value)
 }
 
+// Text for whether current cash flow is beating or missing the chosen target.
 function comparisonText(difference) {
   if (difference > 0) return `${toCurrency(difference)} above target`
   if (difference < 0) return `${toCurrency(Math.abs(difference))} below target`
   return 'On target'
 }
 
+// Overview tab: puts net cash flow first, then summarizes the math behind it.
 function CashFlowFirst({ results, targetDifference }) {
   const summaryRows = [
     ['Gross rent', results.grossMonthlyRent],
@@ -78,6 +81,7 @@ function CashFlowFirst({ results, targetDifference }) {
   )
 }
 
+// Accounting-style statement tab for auditing monthly income and expenses.
 function ProfitLossTable({ results }) {
   const sections = [
     {
@@ -175,6 +179,7 @@ function ProfitLossTable({ results }) {
   )
 }
 
+// Target tab: compares actual monthly cash flow against the selected target.
 function TargetGauge({ results, targetDifference }) {
   const target = Math.max(results.targetMonthlyProfit, 0)
   const current = results.monthlyCashFlow
@@ -220,6 +225,8 @@ function CashFlowInsights({ results }) {
   const contentRef = useRef(null)
   const targetDifference = results.monthlyCashFlow - results.targetMonthlyProfit
   const activeTabInfo = tabs.find((tab) => tab.value === activeTab) ?? tabs[0]
+
+  // Mobile stays in normal flow; desktop gets measured height for the smooth P&L expansion.
   const activeView = useMemo(() => {
     if (activeTab === 'table') return <ProfitLossTable results={results} />
     if (activeTab === 'gauge') {
@@ -232,7 +239,7 @@ function CashFlowInsights({ results }) {
 
   useLayoutEffect(() => {
     const element = contentRef.current
-    if (!element) return undefined
+    if (!element || typeof ResizeObserver === 'undefined') return undefined
 
     function syncHeight() {
       setContentHeight(element.scrollHeight)

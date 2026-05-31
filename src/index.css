@@ -45,6 +45,24 @@ input[type="number"]::-webkit-outer-spin-button {
   appearance: none;
 }
 
+input[type="text"] {
+  color: #334155;
+  -webkit-text-fill-color: #334155;
+}
+
+/* Mobile browsers can drop nested glass layers until the next tap/repaint. */
+@media (max-width: 639px) {
+  main,
+  main * {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  main [class*="animate-"] {
+    animation-duration: 120ms !important;
+  }
+}
+
 input[type="range"] {
   appearance: none;
   -webkit-appearance: none;

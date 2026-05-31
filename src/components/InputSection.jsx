@@ -1,10 +1,8 @@
 import NumberField from './NumberField.jsx'
 import SegmentedControl from './SegmentedControl.jsx'
-import ToggleField from './ToggleField.jsx'
 
 function InputSection({ section, values, onChange }) {
   const Icon = section.icon
-  const isToggledOff = section.toggle && values[section.toggle.key] === false
   // showWhen lets a field appear only for the selected mode, like Profit vs ROI.
   const visibleFields = section.fields.filter(
     (field) => !field.showWhen || values[field.showWhen.key] === field.showWhen.value,
@@ -19,15 +17,6 @@ function InputSection({ section, values, onChange }) {
         </span>
         <h2 className="text-base font-semibold text-slate-950">{section.title}</h2>
       </div>
-      {section.toggle && (
-        <div className="mb-4">
-          <ToggleField
-            label={section.toggle.label}
-            checked={values[section.toggle.key] !== false}
-            onChange={(checked) => onChange(section.toggle.key, checked)}
-          />
-        </div>
-      )}
       {section.choice && (
         <div className="mb-4">
           <SegmentedControl
@@ -47,7 +36,6 @@ function InputSection({ section, values, onChange }) {
             key={field.key}
             field={field}
             value={values[field.key]}
-            disabled={isToggledOff}
             onChange={(value) => onChange(field.key, value)}
           />
         ))}
